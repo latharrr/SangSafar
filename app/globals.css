@@ -1,0 +1,132 @@
+@import "tailwindcss";
+
+/* Proposed palette (DESIGN.md). Every color in the UI comes from these tokens,
+   so the owner can swap the whole palette here without touching components.
+   Light theme only by design: a half-done dark mode is worse than none. */
+:root {
+  --paper: #faf7f0;
+  --paper-raised: #ffffff;
+  --ink: #191613;
+  --ink-soft: #57504a;
+  --line: #e4dccf;
+  --line-strong: #988a74; /* their window on the ruler: 3.15:1 on paper (WCAG 1.4.11), still "line" family */
+  --accent: #b93810;
+  --accent-ink: #ffffff;
+  --trust: #0e6b5c;
+  --warn: #b3261e;
+  --shadow-sheet: 0 1px 2px rgba(25, 22, 19, 0.06), 0 8px 24px rgba(25, 22, 19, 0.08);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
+}
+
+@theme inline {
+  --color-paper: var(--paper);
+  --color-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-trust: var(--trust);
+  --color-warn: var(--warn);
+  --font-display: var(--font-bricolage), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-instrument), ui-sans-serif, system-ui, sans-serif;
+  --radius-sheet: 10px;
+  --shadow-sheet: var(--shadow-sheet);
+  --ease-out-expo: var(--ease-out-expo);
+  /* Type scale (mobile / desktop): display 34/56, h1 26/36, h2 20/24, body 16, small 14, micro 12 */
+  --text-display: 34px;
+  --text-display--line-height: 1.05;
+  --text-display-lg: 56px;
+  --text-display-lg--line-height: 1;
+  --text-h1: 26px;
+  --text-h1--line-height: 1.15;
+  --text-h1-lg: 36px;
+  --text-h1-lg--line-height: 1.1;
+  --text-h2: 20px;
+  --text-h2--line-height: 1.25;
+  --text-h2-lg: 24px;
+  --text-h2-lg--line-height: 1.2;
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-small: 14px;
+  --text-small--line-height: 1.45;
+  --text-micro: 12px;
+  --text-micro--line-height: 1.35;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Browser surfaces, themed */
+::selection { background: color-mix(in srgb, var(--accent) 20%, var(--paper)); color: var(--ink); }
+input, textarea, select { caret-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; border-radius: 4px; }
+html { scrollbar-width: thin; scrollbar-color: var(--line-strong) var(--paper); }
+a { text-underline-offset: 3px; text-decoration-thickness: 1px; }
+time, .tnum, input[type="time"], input[type="date"] { font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+
+h1, h2, h3, .font-display { font-family: var(--font-display); letter-spacing: -0.02em; text-wrap: balance; }
+
+@layer components {
+  .sheet { background: var(--paper-raised); border-radius: var(--radius-sheet); box-shadow: var(--shadow-sheet); }
+  .field {
+    @apply w-full min-h-11 rounded-sheet border border-line bg-raised px-3 text-body text-ink transition-colors duration-150;
+  }
+  .field:hover { border-color: var(--line-strong); }
+  .field:focus-visible { outline: 2px solid var(--ink); outline-offset: 0; border-color: var(--ink); }
+  .field[aria-invalid="true"] { border-color: var(--warn); }
+  .label { @apply mb-2 block text-small font-medium text-ink; }
+  .hint { @apply mt-1 text-micro text-ink-soft; }
+  .error-text { @apply mt-1 text-small text-warn; }
+  .btn {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full px-4 text-body font-semibold
+      transition-[background-color,color,box-shadow,transform] duration-150 ease-out-expo
+      disabled:cursor-not-allowed disabled:opacity-50 active:translate-y-px;
+  }
+  /* Use as "btn btn-primary" etc. */
+  .btn-primary { background: var(--accent); color: var(--accent-ink); }
+  .btn-primary:hover:not(:disabled) { background: color-mix(in srgb, var(--accent) 88%, var(--ink)); }
+  .btn-trust { background: var(--trust); color: #fff; }
+  .btn-trust:hover:not(:disabled) { background: color-mix(in srgb, var(--trust) 85%, var(--ink)); }
+  .btn-quiet { background: var(--paper-raised); color: var(--ink); border: 1px solid var(--line); }
+  .btn-quiet:hover:not(:disabled) { border-color: var(--line-strong); }
+  .btn-ghost { color: var(--ink); }
+  .btn-ghost:hover:not(:disabled) { background: color-mix(in srgb, var(--line) 55%, transparent); }
+  .btn-danger { background: var(--warn); color: #fff; }
+  .btn-danger:hover:not(:disabled) { background: color-mix(in srgb, var(--warn) 85%, var(--ink)); }
+  .chip { @apply inline-flex min-h-11 items-center gap-2 rounded-full border border-line bg-raised px-4 text-small font-medium text-ink; }
+  .chip[aria-pressed="true"], .chip[aria-current="page"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+  .badge { @apply inline-flex items-center gap-1 text-micro font-medium; }
+}
+
+/* Authored moment 1: the route line draws itself once. */
+.route-draw path.route-stroke {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: route-draw 720ms var(--ease-out-expo) 120ms forwards;
+}
+.route-draw .route-dest { opacity: 0; animation: node-in 200ms var(--ease-out-expo) 700ms forwards; }
+.route-draw .route-mode { opacity: 0; animation: node-in 200ms var(--ease-out-expo) 420ms forwards; }
+@keyframes route-draw { to { stroke-dashoffset: 0; } }
+@keyframes node-in { to { opacity: 1; } }
+
+/* Authored moment 2: unlocked trip details unfold when the accept lands. */
+.unfold { animation: unfold 400ms var(--ease-out-expo); }
+@keyframes unfold { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* Loading: a shimmer along the route line, not a spinner. */
+.skeleton { background: linear-gradient(90deg, var(--line) 0%, var(--paper-raised) 50%, var(--line) 100%); background-size: 200% 100%; animation: shimmer 1.4s linear infinite; border-radius: 6px; }
+@keyframes shimmer { to { background-position: -200% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-delay: 0ms !important; transition-duration: 0.01ms !important; }
+  .route-draw path.route-stroke { stroke-dashoffset: 0; }
+  .route-draw .route-dest, .route-draw .route-mode { opacity: 1; }
+}
